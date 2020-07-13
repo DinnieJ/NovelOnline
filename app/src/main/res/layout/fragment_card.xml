@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+    
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:id="@+id/card"
+        app:cardBackgroundColor="@android:color/darker_gray"
+        app:cardCornerRadius="3dp">
+        <ProgressBar
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:id="@+id/card_progress"
+            android:theme="@style/Widget.AppCompat.ProgressBar"/>
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="210dp"
+            android:id="@+id/card_cover"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="110dp"
+            android:text="Title"
+            android:textStyle="bold"
+            android:id="@+id/card_title"
+            android:textSize="16dp"
+            android:textColor="#fff"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Latest chapter"
+            android:id="@+id/card_chapter"
+            android:layout_marginTop="155dp"
+            android:textColor="@android:color/holo_blue_bright"
+            android:textSize="15dp"/>
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>
