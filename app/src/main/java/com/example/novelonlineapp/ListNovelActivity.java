@@ -17,6 +17,5 @@ public class ListNovelActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         System.out.println("hello world 2");
-        View view = findViewById(R.layout.fragment_all);
     }
 }

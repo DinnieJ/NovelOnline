@@ -10,13 +10,30 @@ public class Volume implements Parcelable {
     private ArrayList<Chapter> chapters;
 
     public Volume() {
-
+        this.chapters = new ArrayList<>();
     }
 
     public Volume(String title, ArrayList<Chapter> chapters) {
         this.title = title;
         this.chapters = chapters;
     }
+
+    protected Volume(Parcel in) {
+        title = in.readString();
+        chapters = in.createTypedArrayList(Chapter.CREATOR);
+    }
+
+    public static final Creator<Volume> CREATOR = new Creator<Volume>() {
+        @Override
+        public Volume createFromParcel(Parcel in) {
+            return new Volume(in);
+        }
+
+        @Override
+        public Volume[] newArray(int size) {
+            return new Volume[size];
+        }
+    };
 
     public String getTitle() {
         return title;
@@ -41,6 +58,7 @@ public class Volume implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-
+        dest.writeString(title);
+        dest.writeList(this.chapters);
     }
 }

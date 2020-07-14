@@ -4,17 +4,26 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.example.novelonlineapp.model.hakore.Volume;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
 public class Novel implements Parcelable {
+    @SerializedName("novel_code")
     private String code;
+    @SerializedName("title")
     private String title;
+    @SerializedName("cover")
     private String imgUrl;
+    @SerializedName("description")
     private ArrayList<String> description;
+    @SerializedName("genres")
     private ArrayList<String> genres;
+    @SerializedName("author")
     private String author;
+    @SerializedName("artist")
     private String artist;
+    @SerializedName("volumes")
     private ArrayList<Volume> vols;
 
     public Novel() {
@@ -30,6 +39,14 @@ public class Novel implements Parcelable {
         this.genres = genres;
         this.author = author;
         this.artist = artist;
+    }
+
+    public ArrayList<Volume> getVols() {
+        return vols;
+    }
+
+    public void setVols(ArrayList<Volume> vols) {
+        this.vols = vols;
     }
 
     public String getCode() {
@@ -95,10 +112,25 @@ public class Novel implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-
+        dest.writeString(this.code);
+        dest.writeString(this.artist);
+        dest.writeString(this.title);
+        dest.writeString(this.imgUrl);
+        dest.writeList(this.description);
+        dest.writeList(this.genres);
+        dest.writeString(this.author);
+        dest.writeList(this.vols);
     }
 
     protected Novel(Parcel in) {
+        this.code = in.readString();
+        this.title = in.readString();
+        this.imgUrl = in.readString();
+        this.artist = in.readString();
+        this.author = in.readString();
+        this.description = in.createStringArrayList();
+        this.genres = in.createStringArrayList();
+        this.vols = in.createTypedArrayList(Volume.CREATOR);
 
     }
     public static final Creator<Novel> CREATOR = new Creator<Novel>() {

@@ -1,9 +1,11 @@
-package com.example.novelonlineapp;
+package com.example.novelonlineapp.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -23,6 +25,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.example.novelonlineapp.NovelDetailActivity;
+import com.example.novelonlineapp.R;
 import com.example.novelonlineapp.model.hakore.novel.NovelCard;
 
 import java.util.ArrayList;
@@ -88,7 +92,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        NovelCard result = this.novelResults.get(position);
+        final NovelCard result = this.novelResults.get(position);
         switch (getItemViewType(position)) {
             case ITEM:
                 final NovelCardVH novelCardVH = (NovelCardVH) holder;
@@ -129,7 +133,13 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(context, (String) novelCardVH.card.getTag(TAG_TITLE), Toast.LENGTH_SHORT).show();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("url", result.getPageUrl());
+                        bundle.putString("title", result.getTitle());
+                        bundle.putString("cover", result.getCoverImg());
+                        Intent openDetail = new Intent(context, NovelDetailActivity.class);
+                        openDetail.putExtras(bundle);
+                        context.startActivity(openDetail);
                     }
                 });
                 break;

@@ -10,7 +10,7 @@ import retrofit2.http.Query;
 import retrofit2.http.Url;
 
 public interface HakoreApiService {
-    @GET("all")
+    @GET("/api/hakore/all")
     Call<ListNovelResponse> getAll(@Query("page") int page);
 
     @GET

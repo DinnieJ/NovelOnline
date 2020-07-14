@@ -39,64 +39,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawer;
     private static final String TAG = "MainActivity";
 
-    PaginationAdapter adapter;
-    GridLayoutManager gridLayoutManager;
-
-    RecyclerView rv;
-    ProgressBar progressBar;
-
-    private HakoreApiService service;
-    private boolean isLoading = false;
-    private boolean isLastPage = false;
-    private static final int PAGE_START = 1;
-    private int currentPage = PAGE_START;
-    private int maxPage = 0;
-    private final int ITEM_PER_ROW = 3;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        adapter = new PaginationAdapter(this);
-        rv = findViewById(R.id.recycle_view_all);
-
-        progressBar = findViewById(R.id.main_progress);
-        gridLayoutManager = new GridLayoutManager(this, ITEM_PER_ROW);
-        rv.setLayoutManager(gridLayoutManager);
-        rv.setAdapter(adapter);
-        rv.setItemAnimator(new DefaultItemAnimator());
-        service = BaseApi.getClient().create(HakoreApiService.class);
-
-        loadFirstPage();
-        rv.setOnScrollListener(new PaginationScrollListener(gridLayoutManager, this) {
-            @Override
-            public void loadMoreItems() {
-                isLoading = true;
-                currentPage += 1;
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        loadNextPage();
-                    }
-                }, 1000);
-            }
-
-            @Override
-            public int getTotalPageCount() {
-                return maxPage;
-            }
-
-            @Override
-            public boolean isLastPage() {
-                return isLastPage;
-            }
-
-            @Override
-            public boolean isLoading() {
-                return isLoading;
-            }
-        });
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -113,64 +59,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                    new AllFragment()).commit();
+            navigationView.setCheckedItem(R.id.nav_all);
+        }
 
-    }
-    private void loadFirstPage() {
-        callAllNovelApi().enqueue(new Callback<ListNovelResponse>() {
-            @Override
-            public void onResponse(Call<ListNovelResponse> call, Response<ListNovelResponse> response) {
-
-                List<NovelCard> results = fetchResults(response);
-                progressBar.setVisibility(View.GONE);
-                adapter.addAll(results);
-
-                maxPage = 3;
-                if (currentPage <= maxPage) adapter.addLoadingFooter();
-                else isLastPage = true;
-            }
-
-            @Override
-            public void onFailure(Call<ListNovelResponse> call, Throwable t) {
-                t.printStackTrace();
-
-            }
-        });
-
-    }
-
-    private void loadNextPage() {
-        callAllNovelApi().enqueue(new Callback<ListNovelResponse>() {
-            @Override
-            public void onResponse(Call<ListNovelResponse> call, Response<ListNovelResponse> response) {
-                // Got data. Send it to adapter
-                adapter.removeLoadingFooter();
-                isLoading = false;
-                List<NovelCard> results =  fetchResults(response);
-                adapter.addAll(results);
-                if(currentPage != maxPage) adapter.addLoadingFooter();
-                else isLastPage = true;
-            }
-
-            @Override
-            public void onFailure(Call<ListNovelResponse> call, Throwable t) {
-                t.printStackTrace();
-
-            }
-        });
-    }
-
-    private Call<ListNovelResponse> callAllNovelApi() {
-        return service.getAll(this.currentPage);
-    }
-
-    private List<NovelCard> fetchResults(Response<ListNovelResponse> response) {
-        ListNovelResponse listNovel = response.body();
-        return listNovel.getResults();
-    }
-
-    private int getMaxPage(Response<ListNovelResponse> response) {
-        ListNovelResponse listNovel = response.body();
-        return listNovel.getLastPage();
     }
 
     @Override
@@ -187,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (item.getItemId()) {
             case R.id.nav_all:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AllFragment()).commit();
+                break;
             case R.id.nav_history:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HistoryFragment()).commit();
                 break;

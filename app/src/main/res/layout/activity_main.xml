@@ -21,19 +21,11 @@
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
                 android:elevation="4dp"/>
-            <androidx.recyclerview.widget.RecyclerView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:id="@+id/recycle_view_all"/>
-            <ProgressBar
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:id="@+id/main_progress"
-                android:layout_gravity="center|center_horizontal"
-                android:progressTint="@color/colorPrimary"
-                android:progressBackgroundTint="@color/colorPrimary"
-                android:indeterminate="true"/>
+                android:id="@+id/fragment_container"
+                android:orientation="horizontal" />
         </LinearLayout>
     <com.google.android.material.navigation.NavigationView
         android:layout_width="wrap_content"
