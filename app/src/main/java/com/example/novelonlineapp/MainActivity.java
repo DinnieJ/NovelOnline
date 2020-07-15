@@ -23,6 +23,7 @@ import com.example.novelonlineapp.api.BaseApi;
 import com.example.novelonlineapp.api.HakoreApiService;
 import com.example.novelonlineapp.model.hakore.novel.ListNovelResponse;
 import com.example.novelonlineapp.model.hakore.novel.NovelCard;
+import com.example.novelonlineapp.ui.SearchFragment;
 import com.example.novelonlineapp.ui.all.AllFragment;
 import com.example.novelonlineapp.ui.history.HistoryFragment;
 import com.example.novelonlineapp.utils.PaginationScrollListener;
@@ -84,6 +85,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_history:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HistoryFragment()).commit();
+                break;
+            case R.id.nav_search:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new SearchFragment()).commit();
                 break;
         }
         this.drawer.closeDrawer(GravityCompat.START);

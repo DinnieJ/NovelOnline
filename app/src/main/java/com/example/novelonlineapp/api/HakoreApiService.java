@@ -1,5 +1,6 @@
 package com.example.novelonlineapp.api;
 
+import com.example.novelonlineapp.model.hakore.ChapterDetail;
 import com.example.novelonlineapp.model.hakore.novel.ListNovelResponse;
 import com.example.novelonlineapp.model.hakore.novel.Novel;
 import com.example.novelonlineapp.model.hakore.novel.NovelCard;
@@ -15,4 +16,7 @@ public interface HakoreApiService {
 
     @GET
     Call<Novel> getNovelDetails(@Url String url);
+
+    @GET
+    Call<ChapterDetail> getChapterDetails(@Url String url);
 }

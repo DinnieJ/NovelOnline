@@ -2,19 +2,28 @@ package com.example.novelonlineapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextClock;
 import android.widget.TextView;
 
@@ -26,8 +35,10 @@ import com.bumptech.glide.request.target.Target;
 import com.example.novelonlineapp.adapter.VolumeDetailAdapter;
 import com.example.novelonlineapp.api.BaseApi;
 import com.example.novelonlineapp.api.HakoreApiService;
+import com.example.novelonlineapp.model.hakore.Chapter;
 import com.example.novelonlineapp.model.hakore.Volume;
 import com.example.novelonlineapp.model.hakore.novel.Novel;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
@@ -36,19 +47,21 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class NovelDetailActivity extends AppCompatActivity {
-    Toolbar toolbar;
     ImageView cover;
     TextView title;
+    TextView description;
     TextView author;
     TextView artist;
     ProgressBar titleProgress;
     ProgressBar mainProgressBar;
     HakoreApiService service;
     VolumeDetailAdapter volumeDetailAdapter;
-    RecyclerView rv;
-    LinearLayoutManager linearLayoutManager;
+    TableLayout tableLayout;
+    ScrollView scrollView;
+    FloatingActionButton backToTopBtn;
 
     String urlDetail;
+    Bundle dataFromCard;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,20 +74,39 @@ public class NovelDetailActivity extends AppCompatActivity {
         titleProgress = (ProgressBar) findViewById(R.id.cover_progress);
         mainProgressBar = (ProgressBar) findViewById(R.id.main_progress_detail) ;
         service = BaseApi.getClient().create(HakoreApiService.class);
-        rv = (RecyclerView) findViewById(R.id.volume_detail_layout);
-        linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         volumeDetailAdapter = new VolumeDetailAdapter(this);
-        rv.setLayoutManager(linearLayoutManager);
-        rv.setAdapter(volumeDetailAdapter);
+        tableLayout = (TableLayout) findViewById(R.id.table_layout);
         author = (TextView) findViewById(R.id.author_name);
         artist = (TextView) findViewById(R.id.artist_name);
+        description = (TextView) findViewById(R.id.description_text);
+        scrollView = (ScrollView) findViewById(R.id.scroll_view);
+        backToTopBtn = (FloatingActionButton) findViewById(R.id.btn_back_to_top);
+        backToTopBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                scrollView.smoothScrollTo(0,0);
+            }
+        });
 
-        Bundle bundle = this.getIntent().getExtras();
-        if(bundle != null) {
-            getSupportActionBar().setTitle(bundle.getString("title"));
-            this.urlDetail = bundle.getString("url");
+        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                int scrollY = scrollView.getScrollY();
+                if(scrollY > 50 && backToTopBtn.getVisibility() == View.GONE) {
+                    backToTopBtn.setVisibility(View.VISIBLE);
+                    backToTopBtn.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.scale_fab_in));
+                } else if( scrollY < 50 && backToTopBtn.getVisibility() == View.VISIBLE)  {
+                    backToTopBtn.setVisibility(View.GONE);
+                    backToTopBtn.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.scale_fab_out));
+                }
+            }
+        });
+        dataFromCard = this.getIntent().getExtras();
+        if(dataFromCard != null) {
+            getSupportActionBar().setTitle(dataFromCard.getString("title"));
+            this.urlDetail = dataFromCard.getString("url");
 
-            Glide.with(this).load(bundle.getString("cover"))
+            Glide.with(this).load(dataFromCard.getString("cover"))
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .listener(new RequestListener<String, GlideDrawable>() {
                         @Override
@@ -92,13 +124,8 @@ public class NovelDetailActivity extends AppCompatActivity {
                     .centerCrop()
                     .crossFade()
                     .into(cover);
-            title.setText(bundle.getString("title"));
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    loadData();
-                }
-            }, 500);
+            title.setText(dataFromCard.getString("title"));
+            loadData();
         }
 
 
@@ -115,8 +142,46 @@ public class NovelDetailActivity extends AppCompatActivity {
                 Novel result = response.body();
                 artist.setText("Họa sĩ:" +  result.getArtist());
                 author.setText("Tác giả:" + result.getAuthor());
-                volumeDetailAdapter.clear();
-                volumeDetailAdapter.addAll(result.getVols());
+                for(String line: result.getDescription()) {
+                    description.append(line + "\n");
+                }
+                for(final Volume volume: result.getVols()) {
+                    TableRow row = new TableRow(getApplicationContext());
+                    final LayoutInflater row_inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    View volumeDetail = row_inflater.inflate(R.layout.volume_card, null);
+                    TextView title = volumeDetail.findViewById(R.id.volume_title);
+                    TableLayout chapterView = volumeDetail.findViewById(R.id.chapter_table);
+                    title.setText(volume.getTitle());
+                    for(final Chapter chapter: volume.getChapters()) {
+                        TableRow chapterRow = new TableRow(volumeDetail.getContext());
+                        chapterRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
+                        chapterRow.setPadding(5,20,5,20);
+                        chapterRow.setBackgroundColor(getColor(R.color.colorChapterRow));
+                        TextView text = new TextView(volumeDetail.getContext());
+                        text.setMaxEms(20);
+                        text.setSingleLine(false);
+                        text.setText(chapter.getTitle());
+                        chapterRow.addView(text);
+                        chapterRow.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Bundle bundle = new Bundle();
+                                bundle.putString("title", chapter.getTitle());
+                                bundle.putString("url", chapter.getUrl());
+                                bundle.putString("volume-title", volume.getTitle());
+                                bundle.putString("chapter-code", chapter.getCode());
+                                bundle.putString("novel", dataFromCard.getString("title"));
+
+                                Intent chapterDetailIntent = new Intent(getApplicationContext(), ReadChapterActivity.class);
+                                chapterDetailIntent.putExtras(bundle);
+                                startActivity(chapterDetailIntent);
+                            }
+                        });
+                        chapterView.addView(chapterRow);
+                    }
+                    row.addView(volumeDetail);
+                    tableLayout.addView(row);
+                }
                 mainProgressBar.setVisibility(View.GONE);
             }
 
@@ -126,6 +191,7 @@ public class NovelDetailActivity extends AppCompatActivity {
             }
         });
     }
+
     @Override
     public void finish() {
         super.finish();

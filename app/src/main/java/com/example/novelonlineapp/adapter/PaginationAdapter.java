@@ -102,6 +102,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 } else {
                     title = result.getTitle();
                 }
+                System.out.println(title);
                 String chapter = "";
                 if(result.getLatestChapter().length() > 28) {
                     chapter = result.getLatestChapter().substring(0,28) + "...";
