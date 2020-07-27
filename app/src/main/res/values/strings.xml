@@ -4,6 +4,9 @@
     <string name="open_navigation_drawer">Open navication drawer</string>
     <string name="close_navigation_drawer">Close navigation drawer</string>
     <!-- TODO: Remove or change this placeholder text -->
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="genre_tag">Genre_tag</string>
+    <string name="genre_status">Genre_status</string>
 
 </resources>

@@ -41,17 +41,14 @@ public class ChapterDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder viewHolder = null;
-        System.out.println("on Create View hOlder");
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
         switch (viewType) {
             case LINE:
                 viewHolder = getLineViewHolder(parent, inflater);
-                System.out.println("line");
                 break;
             case IMAGE:
                 viewHolder = getImageViewHolder(parent, inflater);
-                System.out.println("image");
                 break;
         }
 
@@ -76,12 +73,10 @@ public class ChapterDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         final String line = this.chapterContent.get(position);
-        System.out.println("Debug 1: " + line);
         switch (getItemViewType(position)) {
             case LINE:
                 final LineVH lineVH = (LineVH) holder;
                 lineVH.line.setText(line);
-                System.out.println("add-line");
                 break;
             case IMAGE:
                 final ImageVH imageVH = (ImageVH) holder;
@@ -108,7 +103,6 @@ public class ChapterDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.
                         .centerCrop()
                         .crossFade()
                         .into(imageVH.image);
-                System.out.println("add-image");
                 break;
         }
     }

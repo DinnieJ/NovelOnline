@@ -1,4 +1,4 @@
-package com.example.novelonlineapp.model.hakore;
+package com.example.novelonlineapp.model.hakore.chapter;
 
 import android.os.Parcel;
 import android.os.Parcelable;

@@ -3,6 +3,8 @@ package com.example.novelonlineapp.model.hakore;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.example.novelonlineapp.model.hakore.chapter.Chapter;
+
 import java.util.ArrayList;
 
 public class Volume implements Parcelable {

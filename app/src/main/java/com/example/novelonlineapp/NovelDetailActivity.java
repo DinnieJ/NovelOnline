@@ -1,10 +1,6 @@
 package com.example.novelonlineapp;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,19 +8,15 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
-import android.widget.TextClock;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -35,12 +27,10 @@ import com.bumptech.glide.request.target.Target;
 import com.example.novelonlineapp.adapter.VolumeDetailAdapter;
 import com.example.novelonlineapp.api.BaseApi;
 import com.example.novelonlineapp.api.HakoreApiService;
-import com.example.novelonlineapp.model.hakore.Chapter;
+import com.example.novelonlineapp.model.hakore.chapter.Chapter;
 import com.example.novelonlineapp.model.hakore.Volume;
 import com.example.novelonlineapp.model.hakore.novel.Novel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -166,11 +156,13 @@ public class NovelDetailActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 Bundle bundle = new Bundle();
+                                bundle.putString("novel-code", result.getCode());
                                 bundle.putString("title", chapter.getTitle());
                                 bundle.putString("url", chapter.getUrl());
                                 bundle.putString("volume-title", volume.getTitle());
                                 bundle.putString("chapter-code", chapter.getCode());
                                 bundle.putString("novel", dataFromCard.getString("title"));
+                                bundle.putString("cover", result.getImgUrl());
 
                                 Intent chapterDetailIntent = new Intent(getApplicationContext(), ReadChapterActivity.class);
                                 chapterDetailIntent.putExtras(bundle);

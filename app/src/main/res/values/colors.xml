@@ -6,4 +6,7 @@
     <color name="colorChapterRow">#EEEEEE</color>
     <color name="colorVolumeTitle">#DDDDDD</color>
     <color name="bgBottomNavigation">#fe485a</color>
+
+    <color name="colorTextGenreDefault">#6200EE</color>
+    <color name="colorTextGenreSelected">#FFFFFF</color>
 </resources>

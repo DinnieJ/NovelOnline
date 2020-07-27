@@ -1,9 +1,11 @@
 package com.example.novelonlineapp;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -12,16 +14,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.novelonlineapp.adapter.ChapterDetailViewAdapter;
 import com.example.novelonlineapp.api.BaseApi;
 import com.example.novelonlineapp.api.HakoreApiService;
-import com.example.novelonlineapp.model.hakore.Chapter;
-import com.example.novelonlineapp.model.hakore.ChapterDetail;
+import com.example.novelonlineapp.dao.DatabaseHandler;
+import com.example.novelonlineapp.model.hakore.chapter.ChapterDetail;
+import com.example.novelonlineapp.model.hakore.history.History;
 import com.example.novelonlineapp.utils.OnSwipeTouchListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -35,7 +36,6 @@ public class ReadChapterActivity extends AppCompatActivity {
     HakoreApiService service;
 
     RecyclerView rv;
-    BottomNavigationView bottomNavigationView;
     ProgressBar chapterLoading;
     TextView chapterTitle;
     RelativeLayout chapterDetailLayout;
@@ -47,11 +47,16 @@ public class ReadChapterActivity extends AppCompatActivity {
     String nextUrl;
     String currentUrl;
     Bundle dataFromNovel;
+    private int mTotalScrolled = 0;
+
+    DatabaseHandler db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read_chapter);
+        checkFirstRun();
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
         toolbar = getSupportActionBar();
         rv = (RecyclerView) findViewById(R.id.chapter_content_view);
@@ -62,55 +67,49 @@ public class ReadChapterActivity extends AppCompatActivity {
         linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         service = BaseApi.getClient().create(HakoreApiService.class);
         dataFromNovel = this.getIntent().getExtras();
+        db = new DatabaseHandler(this);
         if (dataFromNovel != null) {
             currentUrl = dataFromNovel.getString("url");
             chapterTitle.setText(dataFromNovel.getString("title"));
         }
-
+        rv.setNestedScrollingEnabled(false);
         rv.setLayoutManager(linearLayoutManager);
 
+
         loadData(currentUrl);
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.chapter_navigation);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.btn_next_chapter:
-                        loadNextChapter();
-                        break;
-                    case R.id.btn_prev_chapter:
-                        loadPreviousChapter();
-                        break;
-                }
-                return false;
-            }
-        });
 
         rv.setOnTouchListener(new OnSwipeTouchListener(this) {
             @Override
             public void onSwipeLeft() {
                 loadNextChapter();
             }
+
+            @Override
+            public void onSwipeTop() {
+
+            }
+
+            @Override
+            public void onSwipeBottom() {
+
+            }
+
             public void onSwipeRight() {
                 loadPreviousChapter();
             }
         });
-        rv.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+        rv.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if(oldScrollY > scrollY) {
-                    bottomNavigationView.setVisibility(View.VISIBLE);
-                }
-                else {
-                    bottomNavigationView.setVisibility(View.GONE);
-                }
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                mTotalScrolled += dy;
             }
         });
     }
 
     private void loadNextChapter() {
-        if(nextUrl != "") {
-            Toast.makeText(getApplicationContext(), nextUrl, Toast.LENGTH_SHORT).show();
+        if (nextUrl != "") {
+            Toast.makeText(getApplicationContext(), "Next chapter", Toast.LENGTH_SHORT).show();
             chapterDetailViewAdapter.clear();
             loadData(nextUrl);
         } else {
@@ -119,7 +118,7 @@ public class ReadChapterActivity extends AppCompatActivity {
     }
 
     private void loadPreviousChapter() {
-        if(prevUrl != "") {
+        if (prevUrl != "") {
             Toast.makeText(getApplicationContext(), "Previous chapter", Toast.LENGTH_SHORT).show();
             chapterDetailViewAdapter.clear();
             loadData(prevUrl);
@@ -127,6 +126,7 @@ public class ReadChapterActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "First chapter ", Toast.LENGTH_SHORT).show();
         }
     }
+
     private void loadData(String url) {
         chapterLoading.setVisibility(View.VISIBLE);
         callChapterDetailApi(url).enqueue(new Callback<ChapterDetail>() {
@@ -152,4 +152,34 @@ public class ReadChapterActivity extends AppCompatActivity {
         return service.getChapterDetails(url);
     }
 
+    @Override
+    public void finish() {
+        super.finish();
+        createHistory();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        createHistory();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
+    private void createHistory() {
+        db.addHistory(new History(dataFromNovel.getString("novel-code"), dataFromNovel.getString("novel"), dataFromNovel.getString("title"), currentUrl, mTotalScrolled, dataFromNovel.getString("cover")));
+        this.mTotalScrolled = 0;
+    }
+
+    public void checkFirstRun() {
+        boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getBoolean("isFirstRun", true);
+        if (isFirstRun){
+            new AlertDialog.Builder(this).setTitle("First time here ?").setMessage("Swipe left and right to change the chapter").setNeutralButton("OK", null).show();
+
+            getSharedPreferences("PREFERENCE", MODE_PRIVATE)
+                    .edit()
+                    .putBoolean("isFirstRun", false)
+                    .apply();
+        }
+    }
 }

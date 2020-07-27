@@ -37,18 +37,4 @@
             android:layout_centerInParent="true"
             android:layout_gravity="center" />
     </RelativeLayout>
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/chapter_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="@color/bgBottomNavigation"
-        android:foreground="?attr/selectableItemBackground"
-        app:itemBackground="@color/bgBottomNavigation"
-        app:itemIconTint="@android:color/white"
-        app:itemTextColor="@android:color/white"
-        app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior"
-        app:menu="@menu/chapter_menu"
-        app:itemIconSize="40dp"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

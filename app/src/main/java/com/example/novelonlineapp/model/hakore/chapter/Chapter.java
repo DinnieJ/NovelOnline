@@ -1,11 +1,9 @@
-package com.example.novelonlineapp.model.hakore;
+package com.example.novelonlineapp.model.hakore.chapter;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
-
-import java.util.ArrayList;
 
 public class Chapter implements Parcelable {
     @SerializedName("code")

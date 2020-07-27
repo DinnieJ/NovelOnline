@@ -13,9 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.novelonlineapp.R;
-import com.example.novelonlineapp.model.hakore.Chapter;
+import com.example.novelonlineapp.model.hakore.chapter.Chapter;
 import com.example.novelonlineapp.model.hakore.Volume;
-import com.example.novelonlineapp.model.hakore.novel.NovelCard;
 
 import java.util.ArrayList;
 import java.util.List;

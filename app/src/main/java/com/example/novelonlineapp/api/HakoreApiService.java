@@ -1,9 +1,9 @@
 package com.example.novelonlineapp.api;
 
-import com.example.novelonlineapp.model.hakore.ChapterDetail;
+import com.example.novelonlineapp.model.hakore.chapter.ChapterDetail;
 import com.example.novelonlineapp.model.hakore.novel.ListNovelResponse;
 import com.example.novelonlineapp.model.hakore.novel.Novel;
-import com.example.novelonlineapp.model.hakore.novel.NovelCard;
+import com.google.gson.JsonObject;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -19,4 +19,11 @@ public interface HakoreApiService {
 
     @GET
     Call<ChapterDetail> getChapterDetails(@Url String url);
+
+    @GET("/api/hakore/genrefilter")
+    Call<JsonObject> getGenreFilter();
+
+    @GET("api/hakore/search")
+    Call<ListNovelResponse> searchNovel(@Query("selected") String selected, @Query("ignore") String ignore, @Query("page") int page, @Query("keyword") String keyword);
+
 }

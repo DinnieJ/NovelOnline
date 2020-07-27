@@ -4,36 +4,19 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ProgressBar;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.novelonlineapp.api.BaseApi;
-import com.example.novelonlineapp.api.HakoreApiService;
-import com.example.novelonlineapp.model.hakore.novel.ListNovelResponse;
-import com.example.novelonlineapp.model.hakore.novel.NovelCard;
+import com.example.novelonlineapp.dao.DatabaseHandler;
 import com.example.novelonlineapp.ui.SearchFragment;
 import com.example.novelonlineapp.ui.all.AllFragment;
 import com.example.novelonlineapp.ui.history.HistoryFragment;
-import com.example.novelonlineapp.utils.PaginationScrollListener;
 import com.google.android.material.navigation.NavigationView;
 
-import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -44,7 +27,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         this.drawer = findViewById(R.id.drawer_layout);
